@@ -1,9 +1,9 @@
 {
-  "name": "Your Module",
-  "description": "Describe what your module does.",
+  "name": "Rate Limit Token Bucket",
+  "description": "Per-key token bucket rate limiter",
   "version": "0.1.0",
-  "author": "You",
-  "roles": ["your-role"],
-  "capabilities": ["your.capability"],
+  "author": "MuxCore",
+  "roles": ["infrastructure"],
+  "capabilities": ["ratelimit"],
   "contracts": []
 }
