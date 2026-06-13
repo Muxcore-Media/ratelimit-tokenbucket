@@ -90,7 +90,11 @@ func (m *Module) Info() contracts.ModuleInfo {
 		Description:  "Per-key token bucket rate limiter",
 		Author:       "MuxCore",
 		Capabilities: []string{contracts.CapabilityRateLimiter},
-		HTTPAddr:     m.grpcAddr,
+		Contracts: []contracts.ContractDeclaration{
+			{Repo: "github.com/Muxcore-Media/core/pkg/contracts", Interface: "RateLimiterProvider", Version: "v0.4.0"},
+		},
+		MinCoreVersion: "0.4.0",
+		HTTPAddr:       m.grpcAddr,
 	}
 }
 

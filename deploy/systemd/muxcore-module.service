@@ -1,26 +1,20 @@
 [Unit]
-Description=MuxCore Module - your-module
+Description=MuxCore Module - ratelimit-tokenbucket
 After=network-online.target
 Wants=network-online.target
-
 [Service]
 Type=simple
 User=muxcore
 Group=muxcore
-ExecStart=/usr/local/bin/your-module \
-  --muxcore-mesh-addr localhost:9090 \
-  --muxcore-module-id your-module
+ExecStart=/usr/local/bin/ratelimit-tokenbucket --muxcore-mesh-addr localhost:9090 --muxcore-module-id ratelimit-tokenbucket
+Environment=RATELIMIT_RATE=100 RATELIMIT_BURST=200 RATELIMIT_ENABLED=true
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
-
-; Security hardening
 CapabilityBoundingSet=
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
-ReadWritePaths=/var/lib/your-module
-
 [Install]
 WantedBy=multi-user.target
