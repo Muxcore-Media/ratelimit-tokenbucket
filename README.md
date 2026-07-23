@@ -6,7 +6,7 @@
 
 **Per-key token bucket rate limiter.**
 
-A MuxCore sidecar module that enforces per-key token-bucket limits via gRPC (`Allow` / `Enabled`). Provides the `ratelimit` capability.
+A MuxCore sidecar module that enforces per-key token-bucket limits via gRPC (`Allow` / `Enabled`). Provides the `ratelimit` / `ratelimit.tokenbucket` capability.
 
 ---
 
@@ -27,7 +27,8 @@ Each key gets its own bucket. Limiting is off until `RATELIMIT_ENABLED` is set.
 | `RATELIMIT_RATE` | `100` | Tokens replenished per second |
 | `RATELIMIT_BURST` | `200` | Maximum bucket size |
 | `RATELIMIT_ENABLED` | `false` | Enable limiting (`true` / `1`) |
-| gRPC listen | `:9800` | Rate-limit gRPC address |
+
+Default gRPC listen address (code default, no env): `:9800`.
 
 ---
 
@@ -36,7 +37,6 @@ Each key gets its own bucket. Limiting is off until `RATELIMIT_ENABLED` is set.
 ```bash
 make build
 
-export MUXCORE_INSECURE_DISABLE_TLS=true
 export RATELIMIT_ENABLED=true
 ./ratelimit-tokenbucket --muxcore-mesh-addr localhost:9090
 ```

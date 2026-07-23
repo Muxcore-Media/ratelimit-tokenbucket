@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0]
+
 ### Added
 
-- Initial project scaffold from muxcore-module-starter
+- Per-key token-bucket rate limiter sidecar (`Allow` / `Enabled` gRPC)
+- Capability `ratelimit`; defaults rate 100/s, burst 200, disabled until `RATELIMIT_ENABLED`
+- Config via `RATELIMIT_RATE`, `RATELIMIT_BURST`, `RATELIMIT_ENABLED`; gRPC listen `:9800`

@@ -1,5 +1,5 @@
 # Binaries
-/your-module
+/ratelimit-tokenbucket
 /module
 /cmd/module/module
 
