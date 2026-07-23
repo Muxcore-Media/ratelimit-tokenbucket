@@ -3,7 +3,12 @@
   "description": "Per-key token bucket rate limiter",
   "version": "0.1.0",
   "author": "MuxCore",
-  "roles": ["infrastructure"],
-  "capabilities": ["ratelimit"],
+  "roles": [
+    "infrastructure"
+  ],
+  "capabilities": [
+    "ratelimit",
+    "ratelimit.tokenbucket"
+  ],
   "contracts": []
 }
