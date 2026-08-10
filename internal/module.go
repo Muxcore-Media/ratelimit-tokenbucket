@@ -17,6 +17,7 @@ import (
 
 	"github.com/Muxcore-Media/core/pkg/contracts"
 	ratelimitv1 "github.com/Muxcore-Media/core/proto/gen/muxcore/ratelimit/v1"
+	modulesdk "github.com/Muxcore-Media/core/sdk/go/module"
 )
 
 type bucket struct {
@@ -85,7 +86,7 @@ func (m *Module) Info() contracts.ModuleInfo {
 	return contracts.ModuleInfo{
 		ID:           m.id,
 		Name:         "Rate Limit Token Bucket",
-		Version:      "0.1.0",
+		Version:      "0.1.1",
 		Roles:        []string{"infrastructure"},
 		Description:  "Per-key token bucket rate limiter",
 		Author:       "MuxCore",
@@ -107,6 +108,7 @@ func (m *Module) Init(ctx context.Context) error {
 func (m *Module) Start(ctx context.Context) error {
 	m.grpcSrv = grpc.NewServer()
 	ratelimitv1.RegisterRateLimitServiceServer(m.grpcSrv, m)
+	modulesdk.RegisterSettings(m.grpcSrv, m.id, m)
 	go func() {
 		slog.Info("ratelimit gRPC service started", "addr", m.grpcAddr)
 		if err := m.grpcSrv.Serve(m.lis); err != nil {
@@ -129,7 +131,10 @@ func (m *Module) Health(ctx context.Context) error {
 }
 
 func (m *Module) Allow(ctx context.Context, req *ratelimitv1.AllowRequest) (*ratelimitv1.AllowResponse, error) {
-	if !m.enabled {
+	m.mu.Lock()
+	enabled := m.enabled
+	m.mu.Unlock()
+	if !enabled {
 		return &ratelimitv1.AllowResponse{Allowed: true}, nil
 	}
 	if req.GetKey() == "" {
@@ -140,7 +145,10 @@ func (m *Module) Allow(ctx context.Context, req *ratelimitv1.AllowRequest) (*rat
 }
 
 func (m *Module) Enabled(ctx context.Context, req *ratelimitv1.EnabledRequest) (*ratelimitv1.EnabledResponse, error) {
-	return &ratelimitv1.EnabledResponse{Enabled: m.enabled}, nil
+	m.mu.Lock()
+	enabled := m.enabled
+	m.mu.Unlock()
+	return &ratelimitv1.EnabledResponse{Enabled: enabled}, nil
 }
 
 func (m *Module) allow(key string) bool {
