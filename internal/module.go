@@ -86,11 +86,11 @@ func (m *Module) Info() contracts.ModuleInfo {
 	return contracts.ModuleInfo{
 		ID:           m.id,
 		Name:         "Rate Limit Token Bucket",
-		Version:      "0.1.1",
+		Version:      "0.1.2",
 		Roles:        []string{"infrastructure"},
 		Description:  "Per-key token bucket rate limiter",
 		Author:       "MuxCore",
-		Capabilities: []string{contracts.CapabilityRateLimiter, "ratelimit.tokenbucket"},
+		Capabilities: []string{contracts.CapabilityRateLimiter, "ratelimit.tokenbucket", "settings"},
 		HTTPAddr:     m.grpcAddr,
 	}
 }
