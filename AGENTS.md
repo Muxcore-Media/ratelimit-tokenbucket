@@ -7,8 +7,8 @@ MuxCore sidecar module (`ratelimit-tokenbucket`). Workspace deploy and SSH: [`..
 | Field | Value |
 |-------|-------|
 | Directory | `ratelimit-tokenbucket` |
-| Capabilities | see muxcore.json |
-| Contracts | none declared |
+| Capabilities | `ratelimit`, `ratelimit.tokenbucket`, `settings` |
+| Contracts | `RateLimiterProvider` (`core/pkg/contracts`); gRPC `RateLimitService` |
 
 ## Agent rules
 
@@ -17,10 +17,11 @@ MuxCore sidecar module (`ratelimit-tokenbucket`). Workspace deploy and SSH: [`..
 - Match existing Go patterns; run `gofmt` and package tests before finishing.
 - Cross-module events: prefer `github.com/Muxcore-Media/contracts-media/events` over deprecated `core/pkg/contracts` aliases.
 - Do not edit polluted workspace dumps (see `MASTER-ROADMAP.md` Appendix H).
+- Core must `WireRateLimit` or this sidecar does not throttle HTTP API traffic.
 
 ## Build
 
 ```bash
 cd ratelimit-tokenbucket
-go test ./...
+nix-shell -p go --run 'go test ./...'
 ```

@@ -5,7 +5,7 @@ import "testing"
 func TestSettingsRateBurstEnabled(t *testing.T) {
 	m := NewModule(Config{GRPCAddr: "127.0.0.1:0", Rate: 10, Burst: 5, Enabled: true})
 	defs := m.Settings()
-	if len(defs) != 3 {
+	if len(defs) != 4 {
 		t.Fatalf("settings=%d", len(defs))
 	}
 	if err := m.UpdateSetting("rate", "50"); err != nil {

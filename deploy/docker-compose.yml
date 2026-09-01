@@ -15,15 +15,16 @@ services:
 
   ratelimit-tokenbucket:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: ratelimit-tokenbucket/Dockerfile
     ports:
-      - "9800"
+      - "9800:9800"
     environment:
       MUXCORE_GRPC_ADDR: core:9090
       MUXCORE_INSECURE_DISABLE_TLS: "true"
       MUXCORE_LOG_LEVEL: debug
       MUXCORE_MODULE_ID: ratelimit-tokenbucket
+      RATELIMIT_ENABLED: "true"
     depends_on:
       core:
         condition: service_healthy

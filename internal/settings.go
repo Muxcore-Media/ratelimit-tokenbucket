@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Muxcore-Media/core/pkg/contracts"
 )
@@ -23,8 +24,8 @@ func (m *Module) settingsDefs() []contracts.SettingDef {
 		{
 			Key:         "rate",
 			Label:       "Tokens Per Second",
-			Type:        contracts.SettingTypeString,
-			Value:       strconv.FormatFloat(m.rate, 'f', -1, 64),
+			Type:        contracts.SettingTypeInt,
+			Value:       strconv.Itoa(int(m.rate)),
 			Default:     "100",
 			Description: "Refill rate in tokens/sec (RATELIMIT_RATE)",
 			Group:       "Limiter",
@@ -45,6 +46,15 @@ func (m *Module) settingsDefs() []contracts.SettingDef {
 			Value:       strconv.FormatBool(m.enabled),
 			Default:     "false",
 			Description: "When false, Allow always succeeds (RATELIMIT_ENABLED)",
+			Group:       "Limiter",
+		},
+		{
+			Key:         "idle_ttl",
+			Label:       "Idle Bucket TTL",
+			Type:        contracts.SettingTypeString,
+			Value:       m.idleTTL.String(),
+			Default:     defaultIdleTTL.String(),
+			Description: "Drop per-key buckets after this idle period (RATELIMIT_IDLE_TTL)",
 			Group:       "Limiter",
 		},
 	}
@@ -84,6 +94,15 @@ func (m *Module) updateSetting(key, value string) error {
 		default:
 			return fmt.Errorf("invalid enabled %q (true/false)", value)
 		}
+		return nil
+	case "idle_ttl", "RATELIMIT_IDLE_TTL":
+		d, err := time.ParseDuration(value)
+		if err != nil || d <= 0 {
+			return fmt.Errorf("invalid idle_ttl %q (duration > 0)", value)
+		}
+		m.mu.Lock()
+		m.idleTTL = d
+		m.mu.Unlock()
 		return nil
 	default:
 		return fmt.Errorf("unknown setting %q", key)
