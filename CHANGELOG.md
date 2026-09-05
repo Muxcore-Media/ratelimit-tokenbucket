@@ -13,10 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] — 2026-09-05
+
+### Changed
+
+- Inbound gRPC TLS enabled by default (`grpctls.ServerConfig` + `grpc.Creds`).
+- Default listen address is loopback `127.0.0.1:9800` (was `:9800`); override with `RATELIMIT_GRPC_ADDR`.
+- `MUXCORE_INSECURE_DISABLE_TLS` / `MUXCORE_GRPC_INSECURE` disable TLS for local development.
+
 ## [0.1.0]
 
 ### Added
 
 - Per-key token-bucket rate limiter sidecar (`Allow` / `Enabled` gRPC)
 - Capability `ratelimit`; defaults rate 100/s, burst 200, disabled until `RATELIMIT_ENABLED`
-- Config via `RATELIMIT_RATE`, `RATELIMIT_BURST`, `RATELIMIT_ENABLED`; gRPC listen `:9800`
+- Config via `RATELIMIT_RATE`, `RATELIMIT_BURST`, `RATELIMIT_ENABLED`; gRPC listen `127.0.0.1:9800`

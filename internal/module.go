@@ -13,11 +13,13 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 
 	"github.com/Muxcore-Media/core/pkg/contracts"
 	ratelimitv1 "github.com/Muxcore-Media/core/proto/gen/muxcore/ratelimit/v1"
 	modulesdk "github.com/Muxcore-Media/core/sdk/go/module"
+	"github.com/Muxcore-Media/ratelimit-tokenbucket/internal/grpctls"
 )
 
 type bucket struct {
@@ -51,8 +53,12 @@ func NewModule(cfg Config) *Module {
 		cfg.ID = "ratelimit-tokenbucket"
 	}
 	if cfg.GRPCAddr == "" {
-		cfg.GRPCAddr = ":9800"
+		cfg.GRPCAddr = "127.0.0.1:9800"
 	}
+	if v := os.Getenv("RATELIMIT_GRPC_ADDR"); v != "" {
+		cfg.GRPCAddr = v
+	}
+	cfg.GRPCAddr = resolveGRPCAddr(cfg.GRPCAddr)
 	if cfg.Rate <= 0 {
 		cfg.Rate = 100
 	}
@@ -86,7 +92,7 @@ func (m *Module) Info() contracts.ModuleInfo {
 	return contracts.ModuleInfo{
 		ID:           m.id,
 		Name:         "Rate Limit Token Bucket",
-		Version:      "0.1.2",
+		Version:      "0.1.3",
 		Roles:        []string{"infrastructure"},
 		Description:  "Per-key token bucket rate limiter",
 		Author:       "MuxCore",
@@ -105,8 +111,34 @@ func (m *Module) Init(ctx context.Context) error {
 	return nil
 }
 
+func resolveGRPCAddr(addr string) string {
+	if !grpctls.InsecureAllowed() {
+		return addr
+	}
+	host, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return addr
+	}
+	if host == "" || host == "0.0.0.0" {
+		return "127.0.0.1:" + port
+	}
+	return addr
+}
+
 func (m *Module) Start(ctx context.Context) error {
-	m.grpcSrv = grpc.NewServer()
+	tlsCfg, err := grpctls.ServerConfig()
+	if err != nil {
+		return fmt.Errorf("gRPC TLS: %w", err)
+	}
+	var grpcOpts []grpc.ServerOption
+	if tlsCfg != nil {
+		grpcOpts = append(grpcOpts, grpc.Creds(credentials.NewTLS(tlsCfg)))
+	} else {
+		slog.Warn("ratelimit gRPC listening without TLS (dev only)",
+			"addr", m.grpcAddr,
+			"hint", "set MUXCORE_INSECURE_DISABLE_TLS only for local development")
+	}
+	m.grpcSrv = grpc.NewServer(grpcOpts...)
 	ratelimitv1.RegisterRateLimitServiceServer(m.grpcSrv, m)
 	modulesdk.RegisterSettings(m.grpcSrv, m.id, m)
 	go func() {
