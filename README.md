@@ -24,11 +24,12 @@ Each key gets its own bucket. Limiting is off until `RATELIMIT_ENABLED` is set.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
+| `RATELIMIT_GRPC_ADDR` | `127.0.0.1:9800` | gRPC listen address |
 | `RATELIMIT_RATE` | `100` | Tokens replenished per second |
 | `RATELIMIT_BURST` | `200` | Maximum bucket size |
 | `RATELIMIT_ENABLED` | `false` | Enable limiting (`true` / `1`) |
-
-Default gRPC listen address (code default, no env): `:9800`.
+| `RATELIMIT_TLS_CERT` / `KEY` / `CA` | auto | TLS material (or `MUXCORE_TLS_*`) |
+| `MUXCORE_INSECURE_DISABLE_TLS` | — | Dev-only: disable inbound gRPC TLS |
 
 ---
 
