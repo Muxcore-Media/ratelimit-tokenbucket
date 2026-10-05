@@ -1,7 +1,7 @@
 {
   "name": "Rate Limit Token Bucket",
   "description": "Per-key token bucket rate limiter",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "MuxCore",
   "roles": [
     "infrastructure"

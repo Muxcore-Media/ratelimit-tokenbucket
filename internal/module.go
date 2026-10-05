@@ -19,6 +19,7 @@ import (
 	"github.com/Muxcore-Media/core/pkg/contracts"
 	ratelimitv1 "github.com/Muxcore-Media/core/proto/gen/muxcore/ratelimit/v1"
 	modulesdk "github.com/Muxcore-Media/core/sdk/go/module"
+	manifest "github.com/Muxcore-Media/ratelimit-tokenbucket"
 	"github.com/Muxcore-Media/ratelimit-tokenbucket/internal/grpctls"
 )
 
@@ -92,7 +93,7 @@ func (m *Module) Info() contracts.ModuleInfo {
 	return contracts.ModuleInfo{
 		ID:           m.id,
 		Name:         "Rate Limit Token Bucket",
-		Version:      "0.1.3",
+		Version:      modulesdk.ManifestVersion(manifest.ManifestJSON),
 		Roles:        []string{"infrastructure"},
 		Description:  "Per-key token bucket rate limiter",
 		Author:       "MuxCore",
